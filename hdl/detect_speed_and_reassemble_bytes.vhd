@@ -24,15 +24,15 @@ entity detect_speed_and_reassemble_bytes is
     Port ( clk125Mhz      : in  STD_LOGIC;
         -- Interface to input FIFO
         input_empty         : in  STD_LOGIC;           
-        input_read          : out STD_LOGIC;           
+        input_read          : out STD_LOGIC := '0';           
         input_data          : in  STD_LOGIC_VECTOR (7 downto 0);
         input_data_present  : in  STD_LOGIC;
         input_data_error    : in  STD_LOGIC;
         
-        link_10mb           : out STD_LOGIC;
-        link_100mb          : out STD_LOGIC;
-        link_1000mb         : out STD_LOGIC;
-        link_full_duplex    : out STD_LOGIC;
+        link_10mb           : out STD_LOGIC := '0'; 
+        link_100mb          : out STD_LOGIC := '0';
+        link_1000mb         : out STD_LOGIC := '0';
+        link_full_duplex    : out STD_LOGIC := '0';
         
         output_data_enable  : out STD_LOGIC := '0';
         output_data         : out STD_LOGIC_VECTOR (7 downto 0) := (others => '0');
@@ -111,16 +111,17 @@ reassemble_data:process(clk125Mhz)
                         i_output_data_present <= input_data_present;
                         i_output_data_error   <= input_data_error;
                         active_data           <= input_data_present;
+                        preamble_count <= (others => '0');
                      else
                         -- Check we see a valid preamble sequence
                         -- We see two nibbles of the preamble every
                         -- time we see a byte
                         if input_data_present = '1' then
                             if input_data = x"55" then
-                                if preamble_count (4) = '0' then
+                                if preamble_count(4 downto 2) /= "111" then
                                     preamble_count <= preamble_count+2;
                                 end if;
-                            elsif input_data = x"D5" and preamble_count(4) = '0' then
+                            elsif input_data = x"D5" and preamble_count(4 downto 2) /= "111" then
                                 active_data <= '1';
                             end if;
                         else

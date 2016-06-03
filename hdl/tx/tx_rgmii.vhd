@@ -36,9 +36,9 @@ entity tx_rgmii is
            data_enable : in STD_LOGIC := '1';
            data_error  : in STD_LOGIC;
            
-           eth_txck    : out STD_LOGIC;
-           eth_txctl   : out STD_LOGIC;
-           eth_txd     : out STD_LOGIC_VECTOR (3 downto 0));
+           eth_txck    : out STD_LOGIC := '0';
+           eth_txctl   : out STD_LOGIC := '0';
+           eth_txd     : out STD_LOGIC_VECTOR (3 downto 0) := (others => '0'));
 end tx_rgmii;
 
 architecture Behavioral of tx_rgmii is
@@ -60,9 +60,9 @@ architecture Behavioral of tx_rgmii is
     signal tx_ready            : STD_LOGIC;
     signal tx_ready_meta       : STD_LOGIC;
 
-    ATTRIBUTE IOB : STRING ;
-    ATTRIBUTE IOB OF dout    : signal IS "TRUE";
-    ATTRIBUTE IOB OF doutctl : signal IS "TRUE";
+--    ATTRIBUTE IOB : STRING ;
+--    ATTRIBUTE IOB OF dout    : signal IS "TRUE";
+--    ATTRIBUTE IOB OF doutctl : signal IS "TRUE";
 begin
 
     times_3 <= ("0" & enable_frequency & "0") + ("00" & enable_frequency);  

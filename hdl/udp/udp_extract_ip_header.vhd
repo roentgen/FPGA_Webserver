@@ -1,13 +1,8 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- Engineer: Mike Field <hamster@snap.net.nz>
 -- 
--- Create Date: 26.05.2016 21:56:31
--- Design Name: 
--- Module Name: icmp_extract_ip_header - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
+-- Module Name: udp_extract_ip_header - Behavioral
+--
 -- Description: 
 -- 
 -- Dependencies: 
@@ -23,9 +18,10 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-entity icmp_extract_ip_header is
+entity udp_extract_ip_header is
     generic (
-        our_ip      : std_logic_vector(31 downto 0) := (others => '0'));
+        our_ip        : std_logic_vector(31 downto 0) := (others => '0');
+        our_broadcast : std_logic_vector(31 downto 0) := (others => '0'));
     Port ( clk                : in  STD_LOGIC;
 
            data_valid_in      : in  STD_LOGIC;
@@ -43,10 +39,11 @@ entity icmp_extract_ip_header is
            ip_protocol        : out STD_LOGIC_VECTOR ( 7 downto 0)  := (others => '0');
            ip_checksum        : out STD_LOGIC_VECTOR (15 downto 0)  := (others => '0');
            ip_src_ip          : out STD_LOGIC_VECTOR (31 downto 0)  := (others => '0');
-           ip_dest_ip         : out STD_LOGIC_VECTOR (31 downto 0)  := (others => '0'));           
-end icmp_extract_ip_header;
+           ip_dest_ip         : out STD_LOGIC_VECTOR (31 downto 0)  := (others => '0');
+           ip_dest_broadcast  : out STD_LOGIC);           
+end udp_extract_ip_header;
 
-architecture Behavioral of icmp_extract_ip_header is
+architecture Behavioral of udp_extract_ip_header is
     signal count          : unsigned(6 downto 0)         := (others => '0');
     signal header_len     : unsigned(6 downto 0)         := (others => '0');
 
@@ -75,6 +72,7 @@ begin
     ip_checksum        <= i_ip_checksum;
     ip_src_ip          <= i_ip_src_ip;
     ip_dest_ip         <= i_ip_dest_ip;
+    ip_dest_broadcast  <= '1' when i_ip_dest_ip = our_broadcast else '0'; 
 
 process(clk)
     begin
@@ -109,8 +107,8 @@ process(clk)
                 end case;
                 -- So that additional IP options get dropped
                 if unsigned(count) >= unsigned(header_len) and unsigned(count) > 4
-                    and i_ip_version = x"4" and i_ip_protocol = x"01"
-                    and i_ip_dest_ip = our_ip then
+                    and i_ip_version = x"4" and i_ip_protocol = x"11"
+                    and (i_ip_dest_ip = our_ip or i_ip_dest_ip = our_broadcast) then
                     data_valid_out                   <= data_valid_in;
                     data_out                         <= data_in;
                 end if;

@@ -1,10 +1,7 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- Engineer: Mike Field <hamster@snap.net.nz> 
 -- 
--- Create Date: 26.05.2016 21:35:40
--- Design Name: 
--- Module Name: icmp_strip_ethernet_header - Behavioral
+-- Module Name: udp_strip_ethernet_header - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
@@ -23,7 +20,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-entity icmp_extract_ethernet_header is
+entity udp_extract_ethernet_header is
     generic (
         our_mac     : std_logic_vector(47 downto 0) := (others => '0'));
     Port ( clk            : in  STD_LOGIC;
@@ -35,9 +32,9 @@ entity icmp_extract_ethernet_header is
            ether_type     : out STD_LOGIC_VECTOR (15 downto 0) := (others => '0'); 
            ether_dst_mac  : out STD_LOGIC_VECTOR (47 downto 0) := (others => '0');
            ether_src_mac  : out STD_LOGIC_VECTOR (47 downto 0) := (others => '0'));
-end icmp_extract_ethernet_header;
+end udp_extract_ethernet_header;
 
-architecture Behavioral of icmp_extract_ethernet_header is
+architecture Behavioral of udp_extract_ethernet_header is
     signal count           : unsigned(3 downto 0)         := (others => '0');
     signal i_ether_type    : STD_LOGIC_VECTOR (15 downto 0) := (others => '0'); 
     signal i_ether_dst_mac : STD_LOGIC_VECTOR (47 downto 0) := (others => '0');
